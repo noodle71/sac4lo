@@ -5,16 +5,22 @@ const DATE_FORMAT = "DD/MM/YYYY HH:mm:ss SSS";
 function generatePayload(options){
 	return {
 		apiKey: options.apiKey,
-        dateFrom: parseDateToEpoch(options.dateFrom),
-        dateTo: getToDate(options.dateTo),
+        dateFrom: getDate(options.dateFrom),
+        dateTo: getDate(options.dateTo),
         query: options.query,
         timestamp: options.timestamp,
         sign: generateSignature(options)
 	};
 }
 
-function getToDate(date){
-	return date === "0" ? "0" : parseDateToEpoch(date)
+function getDate(date = '0'){
+	if(date === '-1'){
+		return date;
+	}else if(date === '0'){
+		return new Date().getTime();
+	}else{
+		return parseDateToEpoch(date);
+	}
 }
 
 function parseDateToEpoch(date){
@@ -26,10 +32,10 @@ function isValidDate(date){
 }
 
 function paramsAreOk(options){
-	return !!options.apiKey 
-		&& !!options.apiSecret 
-		&& isCorrectDate(options.dateFrom) 
-		&& (isCorrectDate(options.dateTo) || options.dateTo === '0') 
+	return !!options.apiKey
+		&& !!options.apiSecret
+		&& isCorrectDate(options.dateFrom) || options.dateFrom === '0' || typeof options.dateFrom === 'undefined'
+		&& (isCorrectDate(options.dateTo) || options.dateTo === '-1' || options.dateTo === '0')
 		&& !!options.query;
 }
 
@@ -38,10 +44,10 @@ function isCorrectDate(date){
 }
 
 function generateSignature(options){
-	const signMsg = options.apiKey 
-		+ parseDateToEpoch(options.dateFrom)
-		+ getToDate(options.dateTo) 
-		+ options.query 
+	const signMsg = options.apiKey
+		+ getDate(options.dateFrom)
+		+ getDate(options.dateTo)
+		+ options.query
 		+ options.timestamp;
     return HmacSHA256(signMsg, options.apiSecret).toString();
 }
