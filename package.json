@@ -1,6 +1,6 @@
 {
   "name": "sac4lo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Stream API Connector 4 LOgtrust",
   "main": "bin/index.js",
   "engines": {
